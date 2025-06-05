@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veilforge: AI Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Uncial+Antiqua&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(139, 69, 19, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(101, 67, 33, 0.2) 0%, transparent 50%),
+                linear-gradient(45deg, #2c1810, #1a0f0a, #0d0603);
+            color: #d4af37;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23000"/><rect x="0" y="0" width="20" height="20" fill="%23111" opacity="0.3"/><rect x="20" y="20" width="20" height="20" fill="%23111" opacity="0.2"/><rect x="40" y="0" width="20" height="20" fill="%23111" opacity="0.1"/><rect x="60" y="20" width="20" height="20" fill="%23111" opacity="0.2"/><rect x="80" y="0" width="20" height="20" fill="%23111" opacity="0.1"/></svg>') repeat,
+                linear-gradient(90deg, transparent 0%, rgba(139, 69, 19, 0.05) 50%, transparent 100%);
+            background-size: 50px 50px, 100% 100%;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .title {
+            text-align: center;
+            font-family: 'Uncial Antiqua', cursive;
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            color: #d4af37;
+            text-shadow: 
+                2px 2px 0px #8b4513,
+                4px 4px 0px #654321,
+                6px 6px 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 3px;
+            animation: flicker 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 100% { 
+                text-shadow: 
+                    2px 2px 0px #8b4513,
+                    4px 4px 0px #654321,
+                    6px 6px 10px rgba(0, 0, 0, 0.8),
+                    0 0 20px rgba(212, 175, 55, 0.5);
+            }
+            50% { 
+                text-shadow: 
+                    2px 2px 0px #8b4513,
+                    4px 4px 0px #654321,
+                    6px 6px 10px rgba(0, 0, 0, 0.8),
+                    0 0 30px rgba(212, 175, 55, 0.8);
+            }
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #cd853f;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+        }
+
+        .game-area {
+            background: 
+                linear-gradient(135deg, rgba(139, 69, 19, 0.3), rgba(101, 67, 33, 0.3)),
+                linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+            border: 3px solid #8b4513;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 
+                inset 0 0 30px rgba(0, 0, 0, 0.8),
+                0 0 50px rgba(139, 69, 19, 0.3),
+                0 0 100px rgba(0, 0, 0, 0.8);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .game-area::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid #654321;
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        .story-text {
+            line-height: 1.9;
+            margin-bottom: 30px;
+            font-size: 1.15em;
+            text-align: justify;
+            padding: 25px;
+            background: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><rect width="60" height="60" fill="%23000"/><path d="M0,0 L60,0 L60,60 L0,60 Z" fill="none" stroke="%23654321" stroke-width="0.5" opacity="0.3"/></svg>');
+            border-radius: 15px;
+            border: 2px solid #654321;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 0, 0, 0.5),
+                0 5px 15px rgba(0, 0, 0, 0.3);
+            color: #daa520;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .story-text::before {
+            content: '⚜';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #2c1810;
+            padding: 5px 15px;
+            font-size: 1.5em;
+            color: #d4af37;
+            border-radius: 10px;
+            border: 1px solid #654321;
+        }
+
+        .character-info {
+            background: 
+                linear-gradient(135deg, rgba(139, 69, 19, 0.4), rgba(101, 67, 33, 0.4)),
+                linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+            border: 3px solid #8b4513;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 0, 0, 0.5),
+                0 5px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .character-info::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px solid #654321;
+            border-radius: 10px;
+        }
+
+        .character-info h3 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            text-align: center;
+            font-family: 'Uncial Antiqua', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .choices {
+            margin: 30px 0;
+        }
+
+        .choice-btn {
+            display: block;
+            width: 100%;
+            margin: 15px 0;
+            padding: 20px 25px;
+            background: 
+                linear-gradient(135deg, #8b4513, #a0522d),
+                linear-gradient(45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+            color: #f4e4bc;
+            border: 3px solid #654321;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: left;
+            box-shadow: 
+                inset 0 2px 5px rgba(255, 255, 255, 0.1),
+                0 5px 15px rgba(0, 0, 0, 0.4);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                inset 0 2px 8px rgba(255, 255, 255, 0.2),
+                0 8px 25px rgba(139, 69, 19, 0.4),
+                0 0 20px rgba(212, 175, 55, 0.3);
+            background: 
+                linear-gradient(135deg, #a0522d, #8b4513),
+                linear-gradient(45deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
+            border-color: #d4af37;
+            color: #fff;
+        }
+
+        .choice-btn:hover::before {
+            left: 100%;
+        }
+
+        .choice-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .input-group {
+            margin: 25px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            background: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23000"/><rect x="0" y="0" width="20" height="20" fill="%23111" opacity="0.2"/><rect x="20" y="20" width="20" height="20" fill="%23111" opacity="0.2"/></svg>');
+            border: 2px solid #654321;
+            border-radius: 10px;
+            color: #daa520;
+            font-family: 'Cinzel', serif;
+            font-size: 1em;
+            box-shadow: 
+                inset 0 3px 8px rgba(0, 0, 0, 0.5),
+                0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 
+                inset 0 3px 8px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(212, 175, 55, 0.5);
+            background: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23000"/><rect x="0" y="0" width="20" height="20" fill="%23111" opacity="0.3"/><rect x="20" y="20" width="20" height="20" fill="%23111" opacity="0.3"/></svg>');
+        }
+
+        .start-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin: 30px 0;
+            background: 
+                linear-gradient(135deg, #8b4513, #a0522d),
+                radial-gradient(circle at center, rgba(212, 175, 55, 0.1), transparent);
+            color: #f4e4bc;
+            border: 3px solid #d4af37;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 
+                inset 0 3px 8px rgba(255, 255, 255, 0.1),
+                0 8px 20px rgba(0, 0, 0, 0.4);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                inset 0 3px 12px rgba(255, 255, 255, 0.2),
+                0 12px 30px rgba(139, 69, 19, 0.5),
+                0 0 25px rgba(212, 175, 55, 0.4);
+            background: 
+                linear-gradient(135deg, #a0522d, #8b4513),
+                radial-gradient(circle at center, rgba(212, 175, 55, 0.2), transparent);
+            color: #fff;
+        }
+
+        .loading {
+            text-align: center;
+            color: #d4af37;
+            font-style: italic;
+            margin: 25px 0;
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid #654321;
+        }
+
+        .loading::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><rect width="30" height="30" fill="%23000"/><circle cx="15" cy="15" r="10" fill="none" stroke="%23654321" stroke-width="0.5" opacity="0.3"/></svg>');
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #654321;
+            box-shadow: 
+                inset 0 3px 10px rgba(0, 0, 0, 0.5),
+                0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat {
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(139, 69, 19, 0.2);
+            border: 1px solid #654321;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-family: 'Uncial Antiqua', cursive;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #cd853f;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Torch flame effect */
+        .torch-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .flame {
+            width: 20px;
+            height: 30px;
+            background: radial-gradient(circle, #ff6b35 0%, #f7931e 50%, #ff4500 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flame-flicker 0.5s ease-in-out infinite alternate;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+        }
+
+        @keyframes flame-flicker {
+            0% { 
+                transform: scale(1) rotate(-2deg);
+                box-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+            }
+            100% { 
+                transform: scale(1.1) rotate(2deg);
+                box-shadow: 0 0 25px rgba(255, 107, 53, 1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="torch-container">
+        <div class="flame"></div>
+    </div>
+
+    <div class="container">
+        <h1 class="title">VEILFORGE</h1>
+        <p class="subtitle">~ An Ancient Tale of Magic & Mystery ~</p>
+        
+        <div class="game-area">
+            <!-- Character Creation Phase -->
+            <div id="character-creation">
+                <div class="story-text">
+                    Welcome, brave adventurer, to the ancient realm of Veilforge—a land where magic flows through crumbling stone corridors and forgotten dungeons echo with the whispers of ages past. The great Veil, a mystical barrier that once protected our world from the chaos beyond, now weakens with each passing moon.
+                    <br><br>
+                    Thou art a Veilforged, blessed—or perhaps cursed—with the power that seeps through the cracks of reality itself. The fate of kingdoms rests upon thy shoulders, noble one. Choose thy path wisely, for the shadows watch and the ancient powers stir...
+                </div>
+
+                <div class="input-group">
+                    <label for="race">⚔️ Choose thy Noble Bloodline:</label>
+                    <select id="race">
+                        <option value="">Select thy heritage...</option>
+                        <option value="Human">Human - Children of adaptability and ambition</option>
+                        <option value="Elf">Elf - Ancient keepers of mystical wisdom</option>
+                        <option value="Dwarf">Dwarf - Stout defenders of mountain halls</option>
+                        <option value="Orc">Orc - Fierce warriors of untamed strength</option>
+                        <option value="Vexling">Vexling - Mysterious wanderers of shadow</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="class">🏰 Choose thy Sacred Calling:</label>
+                    <select id="class">
+                        <option value="">Select thy profession...</option>
+                        <option value="Warrior">Warrior - Master of blade and shield</option>
+                        <option value="Mage">Mage - Wielder of arcane mysteries</option>
+                        <option value="Rogue">Rogue - Shadow-walker and keeper of secrets</option>
+                        <option value="Cleric">Cleric - Divine servant and healer of souls</option>
+                        <option value="Beastcaller">Beastcaller - Friend to creatures wild and free</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="location">🗡️ Where doth thy Quest Begin?</label>
+                    <select id="location">
+                        <option value="">Choose thy starting realm...</option>
+                        <option value="The Shattered Spire">The Shattered Spire - Floating ruins of ancient sorcery</option>
+                        <option value="Ironhold">Ironhold - Besieged fortress of the mountain lords</option>
+                        <option value="The Whispering Woods">The Whispering Woods - Haunted forest of lost souls</option>
+                        <option value="The Ashen Wastes">The Ashen Wastes - Cursed battlefield of fallen heroes</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="character-name">📜 By what name art thou known?</label>
+                    <input type="text" id="character-name" placeholder="Enter thy true name, brave one...">
+                </div>
+
+                <button class="start-btn" onclick="startAdventure()">🗡️ Begin thy Noble Quest 🗡️</button>
+            </div>
+
+            <!-- Game Phase -->
+            <div id="game-content" class="hidden">
+                <div id="character-info" class="character-info">
+                    <h3>⚜ Thy Character Sheet ⚜</h3>
+                    <div id="character-details"></div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value" id="health">100</div>
+                            <div class="stat-label">Health</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="experience">0</div>
+                            <div class="stat-label">Experience</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="veil-energy">50</div>
+                            <div class="stat-label">Veil Energy</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="story-content" class="story-text">
+                    <!-- AI-generated story content will appear here -->
+                </div>
+
+                <div id="choices" class="choices">
+                    <!-- AI-generated choices will appear here -->
+                </div>
+
+                <div id="loading" class="loading hidden">
+                    🔮 The ancient spirits whisper thy fate 🔮
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            character: {
+                name: '',
+                race: '',
+                class: '',
+                location: '',
+                health: 100,
+                experience: 0,
+                veilEnergy: 50,
+                inventory: [],
+                abilities: []
+            },
+            storyHistory: [],
+            currentScenario: ''
+        };
+
+        // AI Game Master - simulates AI responses
+        class GameMaster {
+            constructor() {
+                this.personalities = {
+                    'The Shattered Spire': 'mystical and arcane',
+                    'Ironhold': 'gritty and militaristic', 
+                    'The Whispering Woods': 'eerie and supernatural',
+                    'The Ashen Wastes': 'dangerous and apocalyptic'
+                };
+            }
+
+            generateStory(character, choice = null) {
+                const scenarios = this.getScenarios(character, choice);
+                return scenarios[Math.floor(Math.random() * scenarios.length)];
+            }
+
+            getScenarios(character, choice) {
+                const { race, class: charClass, location, name } = character;
+                
+                if (!choice) {
+                    // Initial scenarios based on starting location
+                    switch (location) {
+                        case 'The Shattered Spire':
+                            return [
+                                {
+                                    story: `${name} the ${race} ${charClass} doth manifest within the floating ruins of the Shattered Spire, where ancient magicks crackle through the very air like lightning trapped in stone. Fragments of once-mighty towers drift weightlessly about thee, defying the laws of mortal understanding. The Veil's energy hums with dangerous instability, and in the distance, a crystalline structure pulses with otherworldly light that seems to call to thy very soul. Suddenly, a voice—neither male nor female, neither young nor old—echoes from the void itself: "Another Veilforged arrives at the threshold... but art thou here as friend or foe to the ancient order?"`,
+                                    choices: [
+                                        "Approach the crystal structure with sword drawn and ready",
+                                        "Call out boldly to the mysterious voice in challenge",
+                                        "Attempt to draw the floating Veil energy into thy being",
+                                        "Search these cursed ruins for other lost souls"
+                                    ]
+                                }
+                            ];
+                        case 'Ironhold':
+                            return [
+                                {
+                                    story: `The very ground trembles beneath ${name}'s boots as great siege engines thunder against the mighty gates of Ironhold, the last bastion of the mountain lords. Thou hast arrived at this dwarven stronghold in its darkest hour, when hope grows thin as mountain air. Arrows whistle overhead like deadly wasps as brave defenders scramble along the battlements. A grizzled dwarf captain, his beard stained with soot and blood, spots thee amongst the chaos and bellows over the din of war: "By the forge-fires! Another warrior comes to our aid! The enemy hath breached the outer walls—we need every blade that can be wielded!"`,
+                                    choices: [
+                                        "Take up arms immediately and join the wall's defenders",
+                                        "Offer to lead the civilians to safety through secret passages",
+                                        "Volunteer to infiltrate and sabotage the enemy's war machines",
+                                        "Seek out the ancient dwarven runes that protect this fortress"
+                                    ]
+                                }
+                            ];
+                        case 'The Whispering Woods':
+                            return [
+                                {
+                                    story: `${name} steps across the threshold into the Whispering Woods, where mist swirls between ancient oak and ash like the breath of sleeping giants. The forest itself seems alive with supernatural presence—ghostly lights dance between gnarled branches like fallen stars, and voices speak in tongues that were old when the world was young. As thou dost venture deeper into this realm betwixt the living and the dead, the very trees seem to turn their bark-covered faces toward thee in silent judgment. A spectral figure, translucent as morning mist, materializes before thee and gestures with ethereal fingers toward a hidden path that leads deeper into shadow.`,
+                                    choices: [
+                                        "Follow the ghostly guide into the deeper mysteries",
+                                        "Attempt to commune with the ancient whispering voices",
+                                        "Investigate the source of the dancing spirit-lights",
+                                        "Search for a forgotten shrine or sacred grove"
+                                    ]
+                                }
+                            ];
+                        case 'The Ashen Wastes':
+                            return [
+                                {
+                                    story: `${name} emerges into the desolate Ashen Wastes, where the very air burns with the lingering hatred of demonic forces. The scorched earth cracks beneath thy feet like broken pottery, and in the distance, twisted creatures hunt among the bleached bones of what was once a great battlefield. Here, where heroes fell and darkness claimed victory, a band of ragged scavengers approaches with caution writ large upon their soot-stained faces. One among them, a woman whose eyes have seen too much, calls out in a voice hoarse from breathing cursed air: "Another living soul braves these forsaken lands? Stranger, these wastes are no place for the living—the dead here hunger for warm blood and the demons feast upon hope itself."`,
+                                    choices: [
+                                        "Bargain with the scavengers for knowledge of safe passage",
+                                        "Hunt down a nearby demon to claim its unholy power",
+                                        "Search the ancient battlefield for legendary artifacts",
+                                        "Attempt to consecrate and purify this cursed ground"
+                                    ]
+                                }
+                            ];
+                    }
+                } else {
+                    // Generate follow-up scenarios based on player choice
+                    return this.generateFollowUpScenarios(character, choice);
+                }
+            }
+
+            generateFollowUpScenarios(character, choice) {
+                const outcomes = [
+                    {
+                        story: `Thy bold decision doth lead to most unexpected consequences, brave ${character.name}. As a ${character.race} of the ${character.class} calling, thy unique heritage and training reveal hidden opportunities where others would see only danger. The Veil's ancient energy responds to thy presence like a faithful hound to its master, opening pathways through reality that few mortals dare to tread...`,
+                        choices: [
+                            `Channel thy ${character.class} training to uncover deeper mysteries`,
+                            "Draw upon thy racial heritage for ancient wisdom",
+                            "Trust in the power of the Veil to guide thy steps",
+                            "Proceed with the caution of a seasoned adventurer"
+                        ]
+                    },
+                    {
+                        story: `The path thou hast chosen reveals more of Veilforge's darkest secrets, noble ${character.name}. Ancient magicks stir in response to thy presence, and thou dost sense that thy every action is observed by forces both benevolent and malevolent. Thy journey as a Veilforged hath only just begun, and already the threads of fate begin to weave around thee like a spider's web...`,
+                        choices: [
+                            "Embrace the darker aspects of thy Veil-touched power",
+                            "Seek to understand the light that dwells within the Veil",
+                            "Strive to balance both shadow and light in thy soul",
+                            "Focus thy efforts on mastering practical survival arts"
+                        ]
+                    },
+                    {
+                        story: `Fortune favors the bold, and thy courage hath not gone unnoticed by the ancient powers that dwell within these lands. As ${character.name} the ${character.race}, thou dost carry within thy blood the memories of ages past, and thy ${character.class} training serves thee well in this moment of trial. The very stones beneath thy feet seem to whisper of long-forgotten heroes who once walked this same path...`,
+                        choices: [
+                            "Listen closely to the whispers of ancient heroes",
+                            "Press forward with unwavering determination", 
+                            "Search for hidden passages or secret knowledge",
+                            "Rally any allies who might aid thy noble cause"
+                        ]
+                    }
+                ];
+                
+                return outcomes;
+            }
+        }
+
+        const gameMaster = new GameMaster();
+
+        function startAdventure() {
+            const race = document.getElementById('race').value;
+            const charClass = document.getElementById('class').value;
+            const location = document.getElementById('location').value;
+            const name = document.getElementById('character-name').value.trim();
+
+            if (!race || !charClass || !location || !name) {
+                alert('Pray tell, brave adventurer, thou must complete all details of thy character before beginning this noble quest!');
+                return;
+            }
+
+            // Set up character
+            gameState.character = {
+                ...gameState.character,
+                name: name,
+                race: race,
+                class: charClass,
+                location: location
+            };
+
+            // Hide character creation, show game
+            document.getElementById('character-creation').classList.add('hidden');
+            document.getElementById('game-content').classList.remove('hidden');
+
+            // Display character info
+            updateCharacterInfo();
+
+            // Generate initial story
+            generateNextScenario();
+        }
+
+        function updateCharacterInfo() {
+            const char = gameState.character;
+            document.getElementById('character-details').innerHTML = 
+                `<strong>${char.name}</strong> - ${char.race} ${char.class}<br>
+                 Current Realm: ${char.location}`;
+            
+            document.getElementById('health').textContent = char.health;
+            document.getElementById('experience').textContent = char.experience;
+            document.getElementById('veil-energy').textContent = char.veilEnergy;
+        }
+
+        function generateNextScenario(playerChoice = null) {
+            showLoading(true);
+            
+            // Simulate AI thinking time with medieval flair
+            setTimeout(() => {
+                const scenario = gameMaster.generateStory(gameState.character, playerChoice);
+                displayScenario(scenario);
+                showLoading(false);
+            }, 2500 + Math.random() * 1500);
+        }
+
+        function displayScenario(scenario) {
+            document.getElementById('story-content').innerHTML = scenario.story;
+            
+            const choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = '';
+            
+            scenario.choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn';
+                button.innerHTML = `${index + 1}. ${choice}`;
+                button.onclick = () => makeChoice(choice);
+                choicesDiv.appendChild(button);
+            });
+
+            // Randomly update character stats with medieval flavor
+            updateStats();
+        }
+
+        function makeChoice(choice) {
+            gameState.storyHistory.push(choice);
+            generateNextScenario(choice);
+        }
+
+        function updateStats() {
+            // Simulate stat changes based on actions with medieval consequences
+            const healthChange = Math.floor(Math.random() * 20) - 10;
+            const expChange = Math.floor(Math.random() * 15) + 5;
+            const veilChange = Math.floor(Math.random() * 20) - 10;
+
+            gameState.character.health = Math.max(0, Math.min(100, gameState.character.health + healthChange));
+            gameState.character.experience += expChange;
+            gameState.character.veilEnergy = Math.max(0, Math.min(100, gameState.character.veilEnergy + veilChange));
+
+            updateCharacterInfo();
+        }
+
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            const choices = document.getElementById('choices');
+            
+            if (show) {
+                loading.classList.remove('hidden');
+                choices.classList.add('hidden');
+            } else {
+                loading.classList.add('hidden');
+                choices.classList.remove('hidden');
+            }
+        }
+
+        // Add some atmospheric sound effects (visual cues)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create subtle animations for atmosphere
+            setInterval(() => {
+                const flame = document.querySelector('.flame');
+                if (flame) {
+                    flame.style.transform = `scale(${0.9 + Math.random() * 0.2}) rotate(${-3 + Math.random() * 6}deg)`;
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
