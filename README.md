@@ -1,4 +1,4 @@
-# 🏰 Veilforge: AI Adventure
+# 🏰 Veilforge: Dynamic Adventure
 
 ![Game Screenshot](./screenshots/title.png)
 
