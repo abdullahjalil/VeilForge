@@ -1,7 +1,6 @@
 # 🏰 Veilforge: AI Adventure
 
 ![Game Screenshot](./screenshots/title.png)
-*(Replace with actual screenshot)*
 
 **Veilforge: AI Adventure** is an immersive medieval fantasy text adventure game where your choices shape the story. Explore ancient ruins, battle dark forces, and uncover secrets as a Veilforged - one touched by the mystical energies of the Veil.
 
