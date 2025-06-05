@@ -2,11 +2,11 @@
 
 ![Game Screenshot](./screenshots/title.png)
 
-**Veilforge: AI Adventure** is an immersive medieval fantasy text adventure game where your choices shape the story. Explore ancient ruins, battle dark forces, and uncover secrets as a Veilforged - one touched by the mystical energies of the Veil.
+**Veilforge: Dynamic Adventure** is an immersive medieval fantasy text adventure game where your choices shape the story. Explore ancient ruins, battle dark forces, and uncover secrets as a Veilforged - one touched by the mystical energies of the Veil.
 
 ## ✨ Features
 
-- **Dynamic AI Storytelling**: Every playthrough generates unique adventures
+- **Dynamic Dynamic Storytelling**: Every playthrough generates unique adventures
 - **Rich Character Creation**: Choose from 5 races and 5 classes
 - **4 Starting Realms**: Each with distinct themes and challenges
 - **Medieval Atmosphere**: Authentic old English dialogue and styling
@@ -15,8 +15,8 @@
 
 ## 🎮 How to Play
 
-1. Clone this repository or download the `index.html` file
-2. Open the file in any modern web browser
+1. Clone this repository
+2. Open the 'index.html' in any modern web browser
 3. Create your character by selecting:
    - Noble Bloodline (race)
    - Sacred Calling (class)
@@ -62,6 +62,7 @@
 - [ ] Additional realms and story branches
 - [ ] Sound effects and music
 - [ ] Mobile app version
+- [ ] AI story generation
 
 ## 📜 License
 
